@@ -7902,19 +7902,12 @@ var _user$project$Main$selectOptions = function (ingredient) {
 		_elm_lang$html$Html$option,
 		_elm_lang$core$Native_List.fromArray(
 			[
-				_elm_lang$html$Html_Attributes$value(ingredient.name)
+				_elm_lang$html$Html_Attributes$value(ingredient)
 			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
-				_elm_lang$html$Html$text(ingredient.name)
+				_elm_lang$html$Html$text(ingredient)
 			]));
-};
-var _user$project$Main$ingredientsSelect = function (model) {
-	return A2(
-		_elm_lang$html$Html$select,
-		_elm_lang$core$Native_List.fromArray(
-			[]),
-		A2(_elm_lang$core$List$map, _user$project$Main$selectOptions, model.ingredients));
 };
 var _user$project$Main$model = {
 	ingredients: _elm_lang$core$Native_List.fromArray(
@@ -7923,11 +7916,14 @@ var _user$project$Main$model = {
 	unitInput: '',
 	dishName: '',
 	dishes: _elm_lang$core$Native_List.fromArray(
-		[])
+		[]),
+	ingredientsCategory: _elm_lang$core$Native_List.fromArray(
+		['Välj..', 'Mejeri', 'Grönsaker', 'Frukt', 'Kryddor']),
+	categorySelected: 'Välj..'
 };
-var _user$project$Main$Model = F5(
-	function (a, b, c, d, e) {
-		return {ingredients: a, ingredientInput: b, unitInput: c, dishName: d, dishes: e};
+var _user$project$Main$Model = F7(
+	function (a, b, c, d, e, f, g) {
+		return {ingredients: a, ingredientInput: b, unitInput: c, dishName: d, dishes: e, ingredientsCategory: f, categorySelected: g};
 	});
 var _user$project$Main$Ingredient = F2(
 	function (a, b) {
@@ -7964,12 +7960,31 @@ var _user$project$Main$update = F2(
 				return _elm_lang$core$Native_Utils.update(
 					model,
 					{unitInput: _p0._0});
-			default:
+			case 'InputDish':
 				return _elm_lang$core$Native_Utils.update(
 					model,
 					{dishName: _p0._0});
+			default:
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{categorySelected: _p0._0});
 		}
 	});
+var _user$project$Main$CategorySelect = function (a) {
+	return {ctor: 'CategorySelect', _0: a};
+};
+var _user$project$Main$ingredientsSelect = function (model) {
+	return A2(
+		_elm_lang$html$Html$select,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html_Events$on,
+				'change',
+				A2(_elm_lang$core$Json_Decode$map, _user$project$Main$CategorySelect, _elm_lang$html$Html_Events$targetValue))
+			]),
+		A2(_elm_lang$core$List$map, _user$project$Main$selectOptions, model.ingredientsCategory));
+};
 var _user$project$Main$InputDish = function (a) {
 	return {ctor: 'InputDish', _0: a};
 };
