@@ -7909,11 +7909,56 @@ var _user$project$Main$selectOptions = function (ingredient) {
 				_elm_lang$html$Html$text(ingredient)
 			]));
 };
+var _user$project$Main$ingredientCheckbox = function (ingredient) {
+	return A2(
+		_elm_lang$html$Html$li,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$input,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$type$('checkbox'),
+						_elm_lang$html$Html_Attributes$id(ingredient.name)
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[])),
+				A2(
+				_elm_lang$html$Html$label,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$for(ingredient.name),
+						_elm_lang$html$Html_Attributes$class('checkbox-label')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text(ingredient.name)
+					]))
+			]));
+};
+var _user$project$Main$categoryCheckboxSection = function (model) {
+	return A2(
+		_elm_lang$html$Html$ul,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		A2(
+			_elm_lang$core$List$map,
+			_user$project$Main$ingredientCheckbox,
+			A2(
+				_elm_lang$core$List$filter,
+				function (val) {
+					return _elm_lang$core$Native_Utils.eq(val.category, model.categorySelected);
+				},
+				model.ingredients)));
+};
 var _user$project$Main$model = {
 	ingredients: _elm_lang$core$Native_List.fromArray(
 		[]),
 	ingredientInput: '',
 	unitInput: '',
+	categoryInput: 'Välj..',
 	dishName: '',
 	dishes: _elm_lang$core$Native_List.fromArray(
 		[]),
@@ -7921,17 +7966,17 @@ var _user$project$Main$model = {
 		['Välj..', 'Mejeri', 'Grönsaker', 'Frukt', 'Kryddor']),
 	categorySelected: 'Välj..'
 };
-var _user$project$Main$Model = F7(
-	function (a, b, c, d, e, f, g) {
-		return {ingredients: a, ingredientInput: b, unitInput: c, dishName: d, dishes: e, ingredientsCategory: f, categorySelected: g};
+var _user$project$Main$Model = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {ingredients: a, ingredientInput: b, unitInput: c, categoryInput: d, dishName: e, dishes: f, ingredientsCategory: g, categorySelected: h};
 	});
-var _user$project$Main$Ingredient = F2(
-	function (a, b) {
-		return {name: a, unit: b};
+var _user$project$Main$Ingredient = F3(
+	function (a, b, c) {
+		return {name: a, unit: b, category: c};
 	});
-var _user$project$Main$addIngredient = F3(
-	function (model, ingredient, unit) {
-		var newIngredient = A2(_user$project$Main$Ingredient, ingredient, unit);
+var _user$project$Main$addIngredient = F4(
+	function (model, ingredient, unit, category) {
+		var newIngredient = A3(_user$project$Main$Ingredient, ingredient, unit, category);
 		return _elm_lang$core$Native_Utils.update(
 			model,
 			{
@@ -7951,7 +7996,7 @@ var _user$project$Main$update = F2(
 						dishes: A2(_elm_lang$core$List_ops['::'], _p0._0, model.dishes)
 					});
 			case 'AddIngredient':
-				return A3(_user$project$Main$addIngredient, model, _p0._0, _p0._1);
+				return A4(_user$project$Main$addIngredient, model, _p0._0, _p0._1, _p0._2);
 			case 'InputIngredient':
 				return _elm_lang$core$Native_Utils.update(
 					model,
@@ -7964,12 +8009,31 @@ var _user$project$Main$update = F2(
 				return _elm_lang$core$Native_Utils.update(
 					model,
 					{dishName: _p0._0});
-			default:
+			case 'CategorySelect':
 				return _elm_lang$core$Native_Utils.update(
 					model,
 					{categorySelected: _p0._0});
+			default:
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{categoryInput: _p0._0});
 		}
 	});
+var _user$project$Main$IngredientCategory = function (a) {
+	return {ctor: 'IngredientCategory', _0: a};
+};
+var _user$project$Main$ingredientCategorySelect = function (model) {
+	return A2(
+		_elm_lang$html$Html$select,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html_Events$on,
+				'change',
+				A2(_elm_lang$core$Json_Decode$map, _user$project$Main$IngredientCategory, _elm_lang$html$Html_Events$targetValue))
+			]),
+		A2(_elm_lang$core$List$map, _user$project$Main$selectOptions, model.ingredientsCategory));
+};
 var _user$project$Main$CategorySelect = function (a) {
 	return {ctor: 'CategorySelect', _0: a};
 };
@@ -7994,9 +8058,9 @@ var _user$project$Main$InputUnit = function (a) {
 var _user$project$Main$InputIngredient = function (a) {
 	return {ctor: 'InputIngredient', _0: a};
 };
-var _user$project$Main$AddIngredient = F2(
-	function (a, b) {
-		return {ctor: 'AddIngredient', _0: a, _1: b};
+var _user$project$Main$AddIngredient = F3(
+	function (a, b, c) {
+		return {ctor: 'AddIngredient', _0: a, _1: b, _2: c};
 	});
 var _user$project$Main$AddDish = function (a) {
 	return {ctor: 'AddDish', _0: a};
@@ -8013,7 +8077,7 @@ var _user$project$Main$view = function (model) {
 				_elm_lang$core$Native_List.fromArray(
 					[
 						_elm_lang$html$Html_Events$onSubmit(
-						A2(_user$project$Main$AddIngredient, model.ingredientInput, model.unitInput))
+						A3(_user$project$Main$AddIngredient, model.ingredientInput, model.unitInput, model.categoryInput))
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[
@@ -8039,6 +8103,7 @@ var _user$project$Main$view = function (model) {
 							]),
 						_elm_lang$core$Native_List.fromArray(
 							[])),
+						_user$project$Main$ingredientCategorySelect(model),
 						A2(
 						_elm_lang$html$Html$input,
 						_elm_lang$core$Native_List.fromArray(
@@ -8081,6 +8146,14 @@ var _user$project$Main$view = function (model) {
 							[
 								_elm_lang$html$Html$text('Save')
 							]))
+					])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_user$project$Main$categoryCheckboxSection(model)
 					])),
 				A2(
 				_elm_lang$html$Html$div,
