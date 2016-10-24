@@ -26,7 +26,7 @@ type alias Model =
     , unitInput : String
     , categoryInput : String
     , dishName : String
-    , dishes : List String
+    , dishes : List Dish
     , ingredientsCategory : List String
     , categorySelected : String
     }
@@ -36,6 +36,12 @@ type alias Ingredient =
     { name : String
     , unit : String
     , category : String
+    }
+
+
+type alias Dish =
+    { name : String
+    , ingredients : List Ingredient
     }
 
 
