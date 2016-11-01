@@ -8019,6 +8019,10 @@ var _user$project$Main$update = F2(
 					{categoryInput: _p0._0});
 		}
 	});
+var _user$project$Main$Dish = F2(
+	function (a, b) {
+		return {name: a, ingredients: b};
+	});
 var _user$project$Main$IngredientCategory = function (a) {
 	return {ctor: 'IngredientCategory', _0: a};
 };
