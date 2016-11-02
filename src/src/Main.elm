@@ -123,6 +123,7 @@ view model =
         , dishInputSection model
         , div [] [ categoryCheckboxSection model ]
         , div [] [ text (toString model) ]
+        , div [] []
         ]
 
 

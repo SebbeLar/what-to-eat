@@ -1,7 +1,13 @@
-require('./main.css');
+//require('./main.css');
 
-var Elm = require('./Main.elm');
+//var Elm = require('./Main.elm');
 
-var root  = document.getElementById('root');
+//var root  = document.getElementById('root');
 
-Elm.Main.embed(root);
+//Elm.Main.embed(root);
+'use strict';
+
+require('./index.html');
+var Elm = require('./Main');
+
+var elm = Elm.Main.fullscreen();
