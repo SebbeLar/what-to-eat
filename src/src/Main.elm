@@ -64,7 +64,7 @@ model =
 
 type Msg
     = AddDish String
-    | AddIngredient String String String
+    | AddIngredient Ingredient
     | InputIngredient String
     | InputUnit String
     | InputDish String
@@ -78,8 +78,8 @@ update msg model =
         AddDish dish ->
             { model | dishes = dish :: model.dishes }
 
-        AddIngredient ingredient unit category ->
-            addIngredient model ingredient unit category
+        AddIngredient ingredient ->
+            addIngredient model ingredient
 
         InputIngredient ingredient ->
             { model | ingredientInput = ingredient }
@@ -97,17 +97,13 @@ update msg model =
             { model | categoryInput = ingredient }
 
 
-addIngredient : Model -> String -> String -> String -> Model
-addIngredient model ingredient unit category =
-    let
-        newIngredient =
-            Ingredient ingredient unit category
-    in
-        { model
-            | ingredients = newIngredient :: model.ingredients
-            , ingredientInput = ""
-            , unitInput = ""
-        }
+addIngredient : Model -> Ingredient -> Model
+addIngredient model ingredient =
+    { model
+        | ingredients = ingredient :: model.ingredients
+        , ingredientInput = ""
+        , unitInput = ""
+    }
 
 
 
@@ -117,43 +113,56 @@ addIngredient model ingredient unit category =
 view : Model -> Html Msg
 view model =
     div []
-        [ Html.form
-            [ onSubmit
-                (AddIngredient model.ingredientInput
+        [ ingredientInputSection model
+        , dishInputSection model
+        , div [] [ categoryCheckboxSection model ]
+        , div [] [ text (toString model) ]
+        ]
+
+
+dishInputSection : Model -> Html Msg
+dishInputSection model =
+    Html.form [ onSubmit (AddDish model.dishName) ]
+        [ input
+            [ type' "text"
+            , onInput InputDish
+            , placeholder "Add Dish"
+            , value model.dishName
+            ]
+            []
+        , ingredientsSelect model
+        , input [ type' "submit" ] [ text "Save" ]
+        ]
+
+
+ingredientInputSection : Model -> Html Msg
+ingredientInputSection model =
+    Html.form
+        [ onSubmit
+            (AddIngredient
+                (Ingredient
+                    model.ingredientInput
                     model.unitInput
                     model.categoryInput
                 )
+            )
+        ]
+        [ input
+            [ type' "text"
+            , onInput InputIngredient
+            , placeholder "Add Ingredient"
+            , value model.ingredientInput
             ]
-            [ input
-                [ type' "text"
-                , onInput InputIngredient
-                , placeholder "Add Ingredient"
-                , value model.ingredientInput
-                ]
-                []
-            , input
-                [ type' "text"
-                , onInput InputUnit
-                , placeholder "Add Unit"
-                , value model.unitInput
-                ]
-                []
-            , ingredientCategorySelect model
-            , input [ type' "submit" ] [ text "Save" ]
+            []
+        , input
+            [ type' "text"
+            , onInput InputUnit
+            , placeholder "Add Unit"
+            , value model.unitInput
             ]
-        , Html.form [ onSubmit (AddDish model.dishName) ]
-            [ input
-                [ type' "text"
-                , onInput InputDish
-                , placeholder "Add Dish"
-                , value model.dishName
-                ]
-                []
-            , ingredientsSelect model
-            , input [ type' "submit" ] [ text "Save" ]
-            ]
-        , div [] [ categoryCheckboxSection model ]
-        , div [] [ text (toString model) ]
+            []
+        , ingredientCategorySelect model
+        , input [ type' "submit" ] [ text "Save" ]
         ]
 
 
