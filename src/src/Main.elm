@@ -26,7 +26,7 @@ type alias Model =
     , unitInput : String
     , categoryInput : String
     , dishName : String
-    , dishes : List String
+    , dishes : List Dish
     , ingredientsCategory : List String
     , categorySelected : String
     , checkedIngredients : List Ingredient
@@ -65,7 +65,7 @@ model =
 
 
 type Msg
-    = AddDish String
+    = AddDish Dish
     | AddIngredient Ingredient
     | InputIngredient String
     | InputUnit String
@@ -79,7 +79,7 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         AddDish dish ->
-            { model | dishes = dish :: model.dishes }
+            addDish model dish
 
         AddIngredient ingredient ->
             addIngredient model ingredient
@@ -101,6 +101,13 @@ update msg model =
 
         CheckedIngredient ingredient ->
             toggleCheckedIngredients model ingredient
+
+
+addDish : Model -> Dish -> Model
+addDish model dish =
+    { model
+        | dishes = dish :: model.dishes
+    }
 
 
 toggleCheckedIngredients : Model -> Ingredient -> Model
@@ -142,7 +149,12 @@ view model =
 
 dishInputSection : Model -> Html Msg
 dishInputSection model =
-    Html.form [ onSubmit (AddDish model.dishName) ]
+    Html.form
+        [ onSubmit
+            (AddDish
+                (Dish model.dishName model.checkedIngredients)
+            )
+        ]
         [ input
             [ type' "text"
             , onInput InputDish
