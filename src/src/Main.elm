@@ -29,7 +29,7 @@ type alias Model =
     , dishes : List String
     , ingredientsCategory : List String
     , categorySelected : String
-    , checkedIngredients : List String
+    , checkedIngredients : List Ingredient
     }
 
 
@@ -72,7 +72,7 @@ type Msg
     | InputDish String
     | CategorySelect String
     | IngredientCategory String
-    | CheckedIngredient String
+    | CheckedIngredient Ingredient
 
 
 update : Msg -> Model -> Model
@@ -100,7 +100,21 @@ update msg model =
             { model | categoryInput = ingredient }
 
         CheckedIngredient ingredient ->
+            toggleCheckedIngredients model ingredient
+
+
+toggleCheckedIngredients : Model -> Ingredient -> Model
+toggleCheckedIngredients model ingredient =
+    let
+        newList =
+            List.filter
+                (\x -> x /= ingredient)
+                model.checkedIngredients
+    in
+        if List.length model.checkedIngredients == List.length newList then
             { model | checkedIngredients = ingredient :: model.checkedIngredients }
+        else
+            { model | checkedIngredients = newList }
 
 
 addIngredient : Model -> Ingredient -> Model
@@ -123,7 +137,6 @@ view model =
         , dishInputSection model
         , div [] [ categoryCheckboxSection model ]
         , div [] [ text (toString model) ]
-        , div [] []
         ]
 
 
@@ -185,7 +198,7 @@ ingredientCheckbox : Ingredient -> Html Msg
 ingredientCheckbox ingredient =
     li []
         [ input
-            [ type' "checkbox", id ingredient.name, onClick (CheckedIngredient ingredient.name) ]
+            [ type' "checkbox", id ingredient.name, onClick (CheckedIngredient ingredient) ]
             []
         , label
             [ for ingredient.name, class "checkbox-label" ]
