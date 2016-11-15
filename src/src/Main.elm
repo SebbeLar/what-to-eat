@@ -28,9 +28,7 @@ type alias Model =
     , dishName : String
     , dishes : List Dish
     , ingredientsCategory : List String
-    , categorySelected :
-        String
-        --    , checkedIngredients : List Ingredient
+    , categorySelected : String
     }
 
 
@@ -57,9 +55,7 @@ model =
     , dishName = ""
     , dishes = []
     , ingredientsCategory = [ "Välj..", "Mejeri", "Grönsaker", "Frukt", "Kryddor" ]
-    , categorySelected =
-        "Välj.."
-        --    , checkedIngredients = []
+    , categorySelected = "Välj.."
     }
 
 
