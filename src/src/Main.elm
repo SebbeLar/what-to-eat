@@ -52,7 +52,7 @@ type alias Ingredient =
 
 type alias Dish =
     { name : String
-    , ingredients : List Ingredient
+    , ingredients : List CheckboxIngredients
     }
 
 
@@ -119,11 +119,11 @@ addDish model dish =
         newList =
             List.map
                 (\x -> { x | checked = False })
-                model.ingredients
+                model.checkboxIngredient
     in
         { model
             | dishes = dish :: model.dishes
-            , ingredients = newList
+            , checkboxIngredient = newList
         }
 
 
@@ -167,7 +167,7 @@ view model =
         [ ingredientInputSection model
         , dishInputSection model
         , div [] [ categoryCheckboxSection model ]
-        , div [] [ text (toString model.checkboxIngredient) ]
+        , div [] [ text (toString model.dishes) ]
         ]
 
 
@@ -191,11 +191,11 @@ dishInputSection model =
         ]
 
 
-getCheckedIngredients : Model -> List Ingredient
+getCheckedIngredients : Model -> List CheckboxIngredients
 getCheckedIngredients model =
     List.filter
         (\x -> x.checked == True)
-        model.ingredients
+        model.checkboxIngredient
 
 
 ingredientInputSection : Model -> Html Msg
