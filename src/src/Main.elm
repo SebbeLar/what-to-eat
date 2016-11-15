@@ -29,6 +29,16 @@ type alias Model =
     , dishes : List Dish
     , ingredientsCategory : List String
     , categorySelected : String
+    , checkboxIngredient : List CheckboxIngredients
+    }
+
+
+type alias CheckboxIngredients =
+    { name : String
+    , unit : String
+    , volume : Float
+    , category : String
+    , checked : Bool
     }
 
 
@@ -56,6 +66,7 @@ model =
     , dishes = []
     , ingredientsCategory = [ "Välj..", "Mejeri", "Grönsaker", "Frukt", "Kryddor" ]
     , categorySelected = "Välj.."
+    , checkboxIngredient = []
     }
 
 
@@ -71,7 +82,7 @@ type Msg
     | InputDish String
     | CategorySelect String
     | IngredientCategory String
-    | CheckedIngredient Ingredient
+    | CheckedIngredient CheckboxIngredients
 
 
 update : Msg -> Model -> Model
@@ -116,7 +127,7 @@ addDish model dish =
         }
 
 
-toggleCheckedIngredients : Model -> Ingredient -> Model
+toggleCheckedIngredients : Model -> CheckboxIngredients -> Model
 toggleCheckedIngredients model ingredient =
     let
         newList =
@@ -127,18 +138,23 @@ toggleCheckedIngredients model ingredient =
                     else
                         x
                 )
-                model.ingredients
+                model.checkboxIngredient
     in
-        { model | ingredients = newList }
+        { model | checkboxIngredient = newList }
 
 
 addIngredient : Model -> Ingredient -> Model
 addIngredient model ingredient =
-    { model
-        | ingredients = ingredient :: model.ingredients
-        , ingredientInput = ""
-        , unitInput = ""
-    }
+    let
+        newIngredient =
+            CheckboxIngredients ingredient.name ingredient.unit 0.0 ingredient.category False
+    in
+        { model
+            | ingredients = ingredient :: model.ingredients
+            , checkboxIngredient = newIngredient :: model.checkboxIngredient
+            , ingredientInput = ""
+            , unitInput = ""
+        }
 
 
 
@@ -151,7 +167,7 @@ view model =
         [ ingredientInputSection model
         , dishInputSection model
         , div [] [ categoryCheckboxSection model ]
-        , div [] [ text (toString model.dishes) ]
+        , div [] [ text (toString model.checkboxIngredient) ]
         ]
 
 
@@ -216,13 +232,13 @@ ingredientInputSection model =
 
 categoryCheckboxSection : Model -> Html Msg
 categoryCheckboxSection model =
-    model.ingredients
+    model.checkboxIngredient
         |> List.filter (\val -> val.category == model.categorySelected)
         |> List.map ingredientCheckbox
         |> ul []
 
 
-ingredientCheckbox : Ingredient -> Html Msg
+ingredientCheckbox : CheckboxIngredients -> Html Msg
 ingredientCheckbox ingredient =
     li []
         [ input
