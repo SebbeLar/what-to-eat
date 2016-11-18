@@ -21,30 +21,21 @@ main =
 
 
 type alias Model =
-    { ingredients : List Ingredient
-    , ingredientInput : String
+    { ingredientInput : String
     , unitInput : String
     , categoryInput : String
     , dishName : String
     , dishes : List Dish
     , ingredientsCategory : List String
     , categorySelected : String
-    , checkboxIngredient : List CheckboxIngredients
-    }
-
-
-type alias CheckboxIngredients =
-    { name : String
-    , unit : String
-    , volume : Float
-    , category : String
-    , checked : Bool
+    , ingredients : List Ingredient
     }
 
 
 type alias Ingredient =
     { name : String
     , unit : String
+    , volume : String
     , category : String
     , checked : Bool
     }
@@ -52,21 +43,20 @@ type alias Ingredient =
 
 type alias Dish =
     { name : String
-    , ingredients : List CheckboxIngredients
+    , ingredients : List Ingredient
     }
 
 
 model : Model
 model =
-    { ingredients = []
-    , ingredientInput = ""
+    { ingredientInput = ""
     , unitInput = ""
     , categoryInput = "Välj.."
     , dishName = ""
     , dishes = []
     , ingredientsCategory = [ "Välj..", "Mejeri", "Grönsaker", "Frukt", "Kryddor" ]
     , categorySelected = "Välj.."
-    , checkboxIngredient = []
+    , ingredients = []
     }
 
 
@@ -82,7 +72,7 @@ type Msg
     | InputDish String
     | CategorySelect String
     | IngredientCategory String
-    | CheckedIngredient CheckboxIngredients
+    | CheckedIngredient Ingredient
 
 
 update : Msg -> Model -> Model
@@ -119,15 +109,15 @@ addDish model dish =
         newList =
             List.map
                 (\x -> { x | checked = False })
-                model.checkboxIngredient
+                model.ingredients
     in
         { model
             | dishes = dish :: model.dishes
-            , checkboxIngredient = newList
+            , ingredients = newList
         }
 
 
-toggleCheckedIngredients : Model -> CheckboxIngredients -> Model
+toggleCheckedIngredients : Model -> Ingredient -> Model
 toggleCheckedIngredients model ingredient =
     let
         newList =
@@ -138,23 +128,18 @@ toggleCheckedIngredients model ingredient =
                     else
                         x
                 )
-                model.checkboxIngredient
+                model.ingredients
     in
-        { model | checkboxIngredient = newList }
+        { model | ingredients = newList }
 
 
 addIngredient : Model -> Ingredient -> Model
 addIngredient model ingredient =
-    let
-        newIngredient =
-            CheckboxIngredients ingredient.name ingredient.unit 0.0 ingredient.category False
-    in
-        { model
-            | ingredients = ingredient :: model.ingredients
-            , checkboxIngredient = newIngredient :: model.checkboxIngredient
-            , ingredientInput = ""
-            , unitInput = ""
-        }
+    { model
+        | ingredients = ingredient :: model.ingredients
+        , ingredientInput = ""
+        , unitInput = ""
+    }
 
 
 
@@ -191,11 +176,11 @@ dishInputSection model =
         ]
 
 
-getCheckedIngredients : Model -> List CheckboxIngredients
+getCheckedIngredients : Model -> List Ingredient
 getCheckedIngredients model =
     List.filter
         (\x -> x.checked == True)
-        model.checkboxIngredient
+        model.ingredients
 
 
 ingredientInputSection : Model -> Html Msg
@@ -206,6 +191,7 @@ ingredientInputSection model =
                 (Ingredient
                     model.ingredientInput
                     model.unitInput
+                    "0"
                     model.categoryInput
                     False
                 )
@@ -232,13 +218,13 @@ ingredientInputSection model =
 
 categoryCheckboxSection : Model -> Html Msg
 categoryCheckboxSection model =
-    model.checkboxIngredient
+    model.ingredients
         |> List.filter (\val -> val.category == model.categorySelected)
         |> List.map ingredientCheckbox
         |> ul []
 
 
-ingredientCheckbox : CheckboxIngredients -> Html Msg
+ingredientCheckbox : Ingredient -> Html Msg
 ingredientCheckbox ingredient =
     li []
         [ input
@@ -251,6 +237,11 @@ ingredientCheckbox ingredient =
         , label
             [ for ingredient.name, class "checkbox-label" ]
             [ text ingredient.name ]
+        , input
+            [ type' "text"
+            , value ingredient.volume
+            ]
+            []
         ]
 
 
