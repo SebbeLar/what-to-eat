@@ -35,9 +35,9 @@ carrot' =
 
 sallad : Dish
 sallad =
-    Dish "Sallad" [ milk', cheese' ]
+    Dish "Sallad" [ milk', cheese' ] False
 
 
 soup : Dish
 soup =
-    Dish "Soppa" [ milk', cheese', carrot' ]
+    Dish "Soppa" [ milk', cheese', carrot' ] False

@@ -61,6 +61,7 @@ type Msg
     | IngredientCategory String
     | CheckedIngredient Ingredient
     | UpdateIngredientVolume Ingredient String
+    | CheckedDish Dish
 
 
 update : Msg -> Model -> Model
@@ -92,6 +93,9 @@ update msg model =
 
         UpdateIngredientVolume ingredient volume ->
             updateIngredientVolume model ingredient volume
+
+        CheckedDish dish ->
+            toggleCheckedDish model dish
 
 
 updateIngredientVolume : Model -> Ingredient -> String -> Model
@@ -140,6 +144,22 @@ toggleCheckedIngredients model ingredient =
         { model | ingredients = newList }
 
 
+toggleCheckedDish : Model -> Dish -> Model
+toggleCheckedDish model dish =
+    let
+        newList =
+            List.map
+                (\x ->
+                    if x == dish then
+                        { x | checked = not x.checked }
+                    else
+                        x
+                )
+                model.dishes
+    in
+        { model | dishes = newList }
+
+
 addIngredient : Model -> Ingredient -> Model
 addIngredient model ingredient =
     { model
@@ -160,14 +180,68 @@ view model =
         , dishInputSection model
         , div [] [ categoryCheckboxSection model ]
         , dinnerSelectionSection model
+        , groceryListSection model
         , div [] [ text (toString model.dishes) ]
         ]
+
+
+groceryListSection : Model -> Html Msg
+groceryListSection model =
+    div []
+        [ h3 [] [ text "GroceryList" ]
+        , groceryList model
+        ]
+
+
+groceryList : Model -> Html Msg
+groceryList model =
+    model.dishes
+        |> List.filter (\x -> x.checked)
+        |> List.map groceryListItem
+        |> ul []
+
+
+groceryListItem : Dish -> Html Msg
+groceryListItem dish =
+    dish.ingredients
+        |> List.map pickIngredients
+        |> li []
+
+
+pickIngredients : Ingredient -> Html Msg
+pickIngredients ingredient =
+    div [] [ text (ingredient.name ++ "  " ++ ingredient.volume ++ "  " ++ ingredient.unit) ]
 
 
 dinnerSelectionSection : Model -> Html Msg
 dinnerSelectionSection model =
     div []
-        [ h3 [] [ text "Choose dinners for the week" ] ]
+        [ h3 [] [ text "Choose dinners for the week" ]
+        , dinnerSelectionList model
+        ]
+
+
+dinnerSelectionList : Model -> Html Msg
+dinnerSelectionList model =
+    model.dishes
+        |> List.map dinnerCheckbox
+        |> ul []
+
+
+dinnerCheckbox : Dish -> Html Msg
+dinnerCheckbox dish =
+    li []
+        [ input
+            [ type' "checkbox"
+            , id dish.name
+            , onClick (CheckedDish dish)
+            , checked dish.checked
+            ]
+            []
+        , label
+            [ for dish.name ]
+            [ text dish.name ]
+        ]
 
 
 dishInputSection : Model -> Html Msg
@@ -175,7 +249,7 @@ dishInputSection model =
     Html.form
         [ onSubmit
             (AddDish
-                (Dish model.dishName (getCheckedIngredients model))
+                (Dish model.dishName (getCheckedIngredients model) False)
             )
         ]
         [ input

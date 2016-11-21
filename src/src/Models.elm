@@ -13,4 +13,5 @@ type alias Ingredient =
 type alias Dish =
     { name : String
     , ingredients : List Ingredient
+    , checked : Bool
     }
