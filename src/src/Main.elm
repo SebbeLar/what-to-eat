@@ -73,6 +73,7 @@ type Msg
     | CategorySelect String
     | IngredientCategory String
     | CheckedIngredient Ingredient
+    | UpdateIngredientVolume Ingredient String
 
 
 update : Msg -> Model -> Model
@@ -101,6 +102,25 @@ update msg model =
 
         CheckedIngredient ingredient ->
             toggleCheckedIngredients model ingredient
+
+        UpdateIngredientVolume ingredient volume ->
+            updateIngredientVolume model ingredient volume
+
+
+updateIngredientVolume : Model -> Ingredient -> String -> Model
+updateIngredientVolume model ingredient volume =
+    let
+        newList =
+            List.map
+                (\x ->
+                    if x == ingredient then
+                        { x | volume = volume }
+                    else
+                        x
+                )
+                model.ingredients
+    in
+        { model | ingredients = newList }
 
 
 addDish : Model -> Dish -> Model
@@ -152,8 +172,15 @@ view model =
         [ ingredientInputSection model
         , dishInputSection model
         , div [] [ categoryCheckboxSection model ]
+        , dinnerSelectionSection model
         , div [] [ text (toString model.dishes) ]
         ]
+
+
+dinnerSelectionSection : Model -> Html Msg
+dinnerSelectionSection model =
+    div []
+        [ h3 [] [ text "Choose dinners for the week" ] ]
 
 
 dishInputSection : Model -> Html Msg
@@ -239,6 +266,7 @@ ingredientCheckbox ingredient =
             [ text ingredient.name ]
         , input
             [ type' "text"
+            , onInput (UpdateIngredientVolume ingredient)
             , value ingredient.volume
             ]
             []
