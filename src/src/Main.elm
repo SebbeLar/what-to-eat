@@ -197,15 +197,25 @@ groceryList : Model -> Html Msg
 groceryList model =
     model.dishes
         |> List.filter (\x -> x.checked)
-        |> List.map groceryListItem
+        |> groceryListItem
+        |> List.map pickIngredients
         |> ul []
 
 
-groceryListItem : Dish -> Html Msg
+groceryListItem : List Dish -> List Ingredient
 groceryListItem dish =
-    dish.ingredients
-        |> List.map pickIngredients
-        |> li []
+    let
+        allIngredients =
+            List.map
+                (\x ->
+                    List.map (\xs -> xs) x.ingredients
+                )
+                dish
+
+        newList =
+            List.concat allIngredients
+    in
+        newList
 
 
 pickIngredients : Ingredient -> Html Msg
