@@ -5,6 +5,8 @@ import Html.App as App
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Json.Decode as Json
+import Src.Models exposing (Ingredient, Dish)
+import Src.Dummy exposing (milk, cheese, carrot, sallad, soup)
 
 
 main : Program Never
@@ -32,31 +34,16 @@ type alias Model =
     }
 
 
-type alias Ingredient =
-    { name : String
-    , unit : String
-    , volume : String
-    , category : String
-    , checked : Bool
-    }
-
-
-type alias Dish =
-    { name : String
-    , ingredients : List Ingredient
-    }
-
-
 model : Model
 model =
     { ingredientInput = ""
     , unitInput = ""
     , categoryInput = "Välj.."
     , dishName = ""
-    , dishes = []
+    , dishes = [ sallad, soup ]
     , ingredientsCategory = [ "Välj..", "Mejeri", "Grönsaker", "Frukt", "Kryddor" ]
     , categorySelected = "Välj.."
-    , ingredients = []
+    , ingredients = [ milk, cheese, carrot ]
     }
 
 
