@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.App as App
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import List.Extra exposing (group)
 import Json.Decode as Json
 import Src.Models exposing (Ingredient, Dish)
 import Src.Dummy exposing (milk, cheese, carrot, sallad, soup)
@@ -198,8 +199,21 @@ groceryList model =
     model.dishes
         |> List.filter (\x -> x.checked)
         |> groceryListItem
+        |> foldList
         |> List.map pickIngredients
         |> ul []
+
+
+foldList : List Ingredient -> List Ingredient
+foldList ingredient =
+    let
+        sortedListByName =
+            List.sortBy .name ingredient
+
+        groupedList =
+            List.Extra.group sortedListByName
+    in
+        sortedListByName
 
 
 groceryListItem : List Dish -> List Ingredient
