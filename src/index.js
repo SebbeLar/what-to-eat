@@ -7,7 +7,7 @@
 //Elm.Main.embed(root);
 'use strict';
 
-require('./index.html');
+//require('./Users/sebastianlarsson/Desktop/JavaScript/food-list/src/index.html');
 var Elm = require('./Main');
 
 var elm = Elm.Main.fullscreen();

@@ -1,7 +1,6 @@
 module Main exposing (..)
 
 import Html exposing (..)
-import Debug
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import List.Extra exposing (group)
@@ -102,11 +101,14 @@ update msg model =
 updateIngredientVolume : Model -> Ingredient -> String -> Model
 updateIngredientVolume model ingredient volume =
     let
+        newVolume =
+            Result.withDefault 0 (String.toFloat volume)
+
         newList =
             List.map
                 (\x ->
                     if x == ingredient then
-                        { x | volume = volume }
+                        { x | volume = newVolume }
                     else
                         x
                 )
@@ -199,33 +201,25 @@ groceryList model =
     model.dishes
         |> List.filter (\x -> x.checked)
         |> groceryListItem
-        |> foldList
-        |> List.map removeDuplicates
-        |> List.concat
         |> List.map pickIngredients
         |> ul []
 
 
-removeDuplicates : List Ingredient -> Ingredient
-removeDuplicates list =
+addVolumes : List Ingredient -> List Ingredient
+addVolumes =
     let
-        defaultIngredient =
-            Ingredient "A" "a" 3 "s" False
+        reduce record acc =
+            case acc of
+                [] ->
+                    [ record ]
 
-        firstIngredient =
-            Maybe.withDefault List.head list
-
-        totalToAdd =
-            List.map
-                (\x ->
-                    x.volume
-                )
-                list
-
-        volume =
-            List.map (+) totalToAdd
+                x :: xs ->
+                    if x.name == record.name then
+                        { x | volume = x.volume + record.volume } :: xs
+                    else
+                        record :: acc
     in
-        { firstIngredient | volume = volume }
+        List.sortBy .name >> List.foldr reduce []
 
 
 foldList : List Ingredient -> List (List Ingredient)
@@ -327,7 +321,7 @@ ingredientInputSection model =
                 (Ingredient
                     model.ingredientInput
                     model.unitInput
-                    "0"
+                    0
                     model.categoryInput
                     False
                 )
