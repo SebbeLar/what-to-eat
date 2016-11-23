@@ -4,7 +4,7 @@ module Src.Models exposing (..)
 type alias Ingredient =
     { name : String
     , unit : String
-    , volume : String
+    , volume : Float
     , category : String
     , checked : Bool
     }

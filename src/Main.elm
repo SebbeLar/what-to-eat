@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Html exposing (..)
-import Html.App as App
+import Debug
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import List.Extra exposing (group)
@@ -10,9 +10,9 @@ import Src.Models exposing (Ingredient, Dish)
 import Src.Dummy exposing (milk, cheese, carrot, sallad, soup)
 
 
-main : Program Never
+main : Program Never Model Msg
 main =
-    App.beginnerProgram
+    Html.beginnerProgram
         { model = model
         , view = view
         , update = update
@@ -200,11 +200,35 @@ groceryList model =
         |> List.filter (\x -> x.checked)
         |> groceryListItem
         |> foldList
+        |> List.map removeDuplicates
+        |> List.concat
         |> List.map pickIngredients
         |> ul []
 
 
-foldList : List Ingredient -> List Ingredient
+removeDuplicates : List Ingredient -> Ingredient
+removeDuplicates list =
+    let
+        defaultIngredient =
+            Ingredient "A" "a" 3 "s" False
+
+        firstIngredient =
+            Maybe.withDefault List.head list
+
+        totalToAdd =
+            List.map
+                (\x ->
+                    x.volume
+                )
+                list
+
+        volume =
+            List.map (+) totalToAdd
+    in
+        { firstIngredient | volume = volume }
+
+
+foldList : List Ingredient -> List (List Ingredient)
 foldList ingredient =
     let
         sortedListByName =
@@ -213,7 +237,7 @@ foldList ingredient =
         groupedList =
             List.Extra.group sortedListByName
     in
-        sortedListByName
+        groupedList
 
 
 groceryListItem : List Dish -> List Ingredient
@@ -234,7 +258,7 @@ groceryListItem dish =
 
 pickIngredients : Ingredient -> Html Msg
 pickIngredients ingredient =
-    div [] [ text (ingredient.name ++ "  " ++ ingredient.volume ++ "  " ++ ingredient.unit) ]
+    li [] [ text (ingredient.name ++ "  " ++ (toString ingredient.volume) ++ "  " ++ ingredient.unit) ]
 
 
 dinnerSelectionSection : Model -> Html Msg
@@ -256,7 +280,7 @@ dinnerCheckbox : Dish -> Html Msg
 dinnerCheckbox dish =
     li []
         [ input
-            [ type' "checkbox"
+            [ type_ "checkbox"
             , id dish.name
             , onClick (CheckedDish dish)
             , checked dish.checked
@@ -277,14 +301,14 @@ dishInputSection model =
             )
         ]
         [ input
-            [ type' "text"
+            [ type_ "text"
             , onInput InputDish
             , placeholder "Add Dish"
             , value model.dishName
             ]
             []
         , ingredientsSelect model
-        , input [ type' "submit" ] [ text "Save" ]
+        , input [ type_ "submit" ] [ text "Save" ]
         ]
 
 
@@ -310,21 +334,21 @@ ingredientInputSection model =
             )
         ]
         [ input
-            [ type' "text"
+            [ type_ "text"
             , onInput InputIngredient
             , placeholder "Add Ingredient"
             , value model.ingredientInput
             ]
             []
         , input
-            [ type' "text"
+            [ type_ "text"
             , onInput InputUnit
             , placeholder "Add Unit"
             , value model.unitInput
             ]
             []
         , ingredientCategorySelect model
-        , input [ type' "submit" ] [ text "Save" ]
+        , input [ type_ "submit" ] [ text "Save" ]
         ]
 
 
@@ -340,7 +364,7 @@ ingredientCheckbox : Ingredient -> Html Msg
 ingredientCheckbox ingredient =
     li []
         [ input
-            [ type' "checkbox"
+            [ type_ "checkbox"
             , id ingredient.name
             , onClick (CheckedIngredient ingredient)
             , checked ingredient.checked
@@ -350,9 +374,8 @@ ingredientCheckbox ingredient =
             [ for ingredient.name, class "checkbox-label" ]
             [ text ingredient.name ]
         , input
-            [ type' "text"
+            [ type_ "text"
             , onInput (UpdateIngredientVolume ingredient)
-            , value ingredient.volume
             ]
             []
         ]
