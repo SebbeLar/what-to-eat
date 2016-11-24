@@ -201,6 +201,7 @@ groceryList model =
     model.dishes
         |> List.filter (\x -> x.checked)
         |> groceryListItem
+        |> addVolumes
         |> List.map pickIngredients
         |> ul []
 
